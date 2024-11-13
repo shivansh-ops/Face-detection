@@ -1,19 +1,33 @@
 import cv2
 
-a = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
-b = cv2.VideoCapture(0)
+# Load the Haar cascade for face detection
+face_cascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+
+# Initialize the video capture from the default webcam
+video_capture = cv2.VideoCapture(0)
+
 while True:
-    c_rect, d_image = b.read()
-    e = cv2.cvtColor(d_image,cv2.COLOR_BGR2GRAY)
-    f = a.detectMultiScale(e, 1.3, 6)
+    # Read each frame from the video feed
+    frame_captured, frame = video_capture.read()
 
-    for (x1, y1, h1, w1) in f:
-        cv2.rectangle(d_image, (x1, y1), (x1 + w1, y1 + h1), (255, 0, 0), 5)
+    # Convert the frame to grayscale for face detection
+    gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    cv2.imshow('img', d_image)
-    h = cv2.waitKey(40) & 0xff
-    if h == 40:
+    # Detect faces in the grayscale frame
+    detected_faces = face_cascade.detectMultiScale(gray_frame, 1.3, 6)
+
+    # Draw rectangles around detected faces
+    for (x, y, width, height) in detected_faces:
+        cv2.rectangle(frame, (x, y), (x + width, y + height), (255, 0, 0), 5)
+
+    # Display the frame with the detected faces
+    cv2.imshow('Face Detection', frame)
+
+    # Wait for a key press; exit the loop if the key 'q' is pressed
+    key = cv2.waitKey(40) & 0xff
+    if key == ord('q'):
         break
 
-b.release()
+# Release the video capture and close all OpenCV windows
+video_capture.release()
 cv2.destroyAllWindows()
